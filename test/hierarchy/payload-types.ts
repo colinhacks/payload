@@ -67,30 +67,34 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    articles: Article;
     categories: Category;
     departments: Department;
+    divisions: Division;
     folders: Folder;
     organizations: Organization;
     pages: Page;
     products: Product;
     regions: Region;
-    users: User;
     'payload-kv': PayloadKv;
+    users: User;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
   collectionsJoins: {};
   collectionsSelect: {
+    articles: ArticlesSelect<false> | ArticlesSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     departments: DepartmentsSelect<false> | DepartmentsSelect<true>;
+    divisions: DivisionsSelect<false> | DivisionsSelect<true>;
     folders: FoldersSelect<false> | FoldersSelect<true>;
     organizations: OrganizationsSelect<false> | OrganizationsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
     regions: RegionsSelect<false> | RegionsSelect<true>;
-    users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -131,6 +135,47 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articles".
+ */
+export interface Article {
+  id: string;
+  title: string;
+  organization?: (string | null) | Organization;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "organizations".
+ */
+export interface Organization {
+  id: string;
+  parent?: (string | null) | Organization;
+  title: string;
+  content?: string | null;
+  parentFolder?: (string | null) | Folder;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+  _h_slugPath?: string | null;
+  _h_titlePath?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "folders".
+ */
+export interface Folder {
+  id: string;
+  parentFolder?: (string | null) | Folder;
+  name: string;
+  updatedAt: string;
+  createdAt: string;
+  _h_slugPath?: string | null;
+  _h_titlePath?: string | null;
+  allowedTypes?: ('organizations' | 'products')[] | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "categories".
  */
 export interface Category {
@@ -157,31 +202,14 @@ export interface Department {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "folders".
+ * via the `definition` "divisions".
  */
-export interface Folder {
+export interface Division {
   id: string;
-  parentFolder?: (string | null) | Folder;
-  name: string;
-  updatedAt: string;
-  createdAt: string;
-  _h_slugPath?: string | null;
-  _h_titlePath?: string | null;
-  allowedTypes?: ('organizations' | 'products')[] | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "organizations".
- */
-export interface Organization {
-  id: string;
-  parent?: (string | null) | Organization;
+  parent?: (string | null) | Division;
   title: string;
-  content?: string | null;
-  parentFolder?: (string | null) | Folder;
   updatedAt: string;
   createdAt: string;
-  _status?: ('draft' | 'published') | null;
   _h_slugPath?: string | null;
   _h_titlePath?: string | null;
 }
@@ -230,6 +258,23 @@ export interface Region {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv".
+ */
+export interface PayloadKv {
+  id: string;
+  key: string;
+  data:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
@@ -255,28 +300,15 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-kv".
- */
-export interface PayloadKv {
-  id: string;
-  key: string;
-  data:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
   id: string;
   document?:
+    | ({
+        relationTo: 'articles';
+        value: string | Article;
+      } | null)
     | ({
         relationTo: 'categories';
         value: string | Category;
@@ -284,6 +316,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'departments';
         value: string | Department;
+      } | null)
+    | ({
+        relationTo: 'divisions';
+        value: string | Division;
       } | null)
     | ({
         relationTo: 'folders';
@@ -353,6 +389,16 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articles_select".
+ */
+export interface ArticlesSelect<T extends boolean = true> {
+  title?: T;
+  organization?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "categories_select".
  */
 export interface CategoriesSelect<T extends boolean = true> {
@@ -374,6 +420,18 @@ export interface DepartmentsSelect<T extends boolean = true> {
   createdAt?: T;
   _breadcrumbSlug?: T;
   _breadcrumbTitle?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "divisions_select".
+ */
+export interface DivisionsSelect<T extends boolean = true> {
+  parent?: T;
+  title?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _h_slugPath?: T;
+  _h_titlePath?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -445,6 +503,14 @@ export interface RegionsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv_select".
+ */
+export interface PayloadKvSelect<T extends boolean = true> {
+  key?: T;
+  data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
@@ -464,14 +530,6 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-kv_select".
- */
-export interface PayloadKvSelect<T extends boolean = true> {
-  key?: T;
-  data?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
